@@ -1,0 +1,2 @@
+# ClawCrane
+Aims to fix the broken grab offset of Shiny Wasabi Kitty plushie so that you can actually grab it.
