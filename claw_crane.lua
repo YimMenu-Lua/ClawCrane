@@ -62,6 +62,12 @@ local function DRAW_CLAW_CRANE_ESP()
     GRAPHICS.DRAW_SPRITE("CommonMenu", "common_medal", p_screen_x, p_screen_y, 0.02, 0.04, 0.0, 255, 0, 0, 255, false, 0)
 end
 
+event.register_handler(menu_event.ScriptsReloaded, function()
+    fix_swk_y_offset:disable_patch()
+    distance_result_store:disable_patch()
+    distance_result_load:disable_patch()
+end)
+
 script.register_looped("Claw Crane", function()
     if script.is_active("am_mp_arcade_claw_crane") then
         claw_crane_state = locals.get_int("am_mp_arcade_claw_crane", 262 + 43)
