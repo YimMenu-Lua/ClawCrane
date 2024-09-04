@@ -6,8 +6,10 @@ local rng_result       = 0
 local sweet_spot       = 0.0
 local plushie_spot     = vec3:new(0, 0, 0)
 local claw_spot        = vec3:new(0, 0, 0)
+local swk_pos_fixed    = false
 
 -- Replace SWK's Y grab offset (-0.03463f) with PRB's Y grab offset (0.00628f) in little-endian format
+-- This apparently breaks the plushie if the user tries to re-grab it after winning (shapetest fails). Re-entering the arcade fixes it.
 fix_swk_y_offset = scr_patch:new("am_mp_arcade_claw_crane", "FSWKYO", "29 30 D8 0D BD", 1, {0x75, 0xC8, 0xCD, 0x3B}) -- Replace PUSH_CONST_F -0.03463 with PUSH_CONST_F 0.00628
 
 -- Store distance result variable into a local so that we can read or modify it at runtime however the fuck we want
@@ -29,6 +31,26 @@ local function GET_CLAW_CRANE_SPOT()
         { "int", collided_plushie }
     })
     return OBJECT.GET_OFFSET_FROM_COORD_AND_HEADING_IN_WORLD_COORDS(claw_coords.x, claw_coords.y, claw_coords.z, claw_heading, grab_offset.x, grab_offset.y, grab_offset.z)
+end
+
+-- This will fail if the user changes the cabinet location, but I don't care.
+local function FIX_SWK_POSITION()
+    if not swk_pos_fixed then
+        local swk_entity = locals.get_int("am_mp_arcade_claw_crane", 262 + 25 + 12)
+        if ENTITY.DOES_ENTITY_EXIST(swk_entity) then
+            local swk_offset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(swk_entity, 0.0, 0.020, 0.0)
+            ENTITY.SET_ENTITY_COORDS(swk_entity, swk_offset.x, swk_offset.y, swk_offset.z, true, false, false, true)
+            swk_pos_fixed = true
+    	end
+    end
+end
+
+local function RESTORE_SWK_POSITION()
+    local swk_entity = locals.get_int("am_mp_arcade_claw_crane", 262 + 25 + 12)
+    if ENTITY.DOES_ENTITY_EXIST(swk_entity) then
+        local swk_offset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(swk_entity, 0.0, -0.020, 0.0)
+        ENTITY.SET_ENTITY_COORDS(swk_entity, swk_offset.x, swk_offset.y, swk_offset.z, true, false, false, true)
+    end
 end
 
 local function DRAW_CLAW_CRANE_ESP()
@@ -66,6 +88,7 @@ event.register_handler(menu_event.ScriptsReloaded, function()
     fix_swk_y_offset:disable_patch()
     distance_result_store:disable_patch()
     distance_result_load:disable_patch()
+    RESTORE_SWK_POSITION()
 end)
 
 script.register_looped("Claw Crane", function()
@@ -80,5 +103,6 @@ script.register_looped("Claw Crane", function()
             
             DRAW_CLAW_CRANE_ESP()
         end
+        FIX_SWK_POSITION()
     end
 end)
