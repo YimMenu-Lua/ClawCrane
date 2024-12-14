@@ -24,10 +24,10 @@ local function GET_COLLIDED_PLUSHIE_SPOT()
 end
 
 local function GET_CLAW_CRANE_SPOT()
-    local claw_entity  = locals.get_int("am_mp_arcade_claw_crane", 262 + 25 + 3)
+    local claw_entity  = locals.get_int("am_mp_arcade_claw_crane", 283 + 25 + 3)
     local claw_coords  = ENTITY.GET_ENTITY_COORDS(claw_entity, true)
     local claw_heading = ENTITY.GET_ENTITY_HEADING(claw_entity)
-    local grab_offset  = scr_function.call_script_function("am_mp_arcade_claw_crane", 0x6655F, "vector3", {
+    local grab_offset  = scr_function.call_script_function("am_mp_arcade_claw_crane", 0x66A16, "vector3", {
         { "int", collided_plushie }
     })
     return OBJECT.GET_OFFSET_FROM_COORD_AND_HEADING_IN_WORLD_COORDS(claw_coords.x, claw_coords.y, claw_coords.z, claw_heading, grab_offset.x, grab_offset.y, grab_offset.z)
@@ -36,7 +36,7 @@ end
 -- This will fail if the user changes the cabinet location, but I don't care.
 local function FIX_SWK_POSITION()
     if not swk_pos_fixed then
-        local swk_entity = locals.get_int("am_mp_arcade_claw_crane", 262 + 25 + 12)
+        local swk_entity = locals.get_int("am_mp_arcade_claw_crane", 283 + 25 + 12)
         if ENTITY.DOES_ENTITY_EXIST(swk_entity) then
             local swk_offset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(swk_entity, 0.0, 0.020, 0.0)
             ENTITY.SET_ENTITY_COORDS(swk_entity, swk_offset.x, swk_offset.y, swk_offset.z, true, false, false, true)
@@ -46,7 +46,7 @@ local function FIX_SWK_POSITION()
 end
 
 local function RESTORE_SWK_POSITION()
-    local swk_entity = locals.get_int("am_mp_arcade_claw_crane", 262 + 25 + 12)
+    local swk_entity = locals.get_int("am_mp_arcade_claw_crane", 283 + 25 + 12)
     if ENTITY.DOES_ENTITY_EXIST(swk_entity) then
         local swk_offset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(swk_entity, 0.0, -0.020, 0.0)
         ENTITY.SET_ENTITY_COORDS(swk_entity, swk_offset.x, swk_offset.y, swk_offset.z, true, false, false, true)
@@ -93,10 +93,10 @@ end)
 
 script.register_looped("Claw Crane", function()
     if script.is_active("am_mp_arcade_claw_crane") then
-        claw_crane_state = locals.get_int("am_mp_arcade_claw_crane", 262 + 43)
-        collided_plushie = locals.get_int("am_mp_arcade_claw_crane", 122 + (1 + (self.get_id() * 4)) + 2)
+        claw_crane_state = locals.get_int("am_mp_arcade_claw_crane", 283 + 43)
+        collided_plushie = locals.get_int("am_mp_arcade_claw_crane", 143 + (1 + (self.get_id() * 4)) + 2)
         if collided_plushie ~= 0 then
-            rng_result      = locals.get_int("am_mp_arcade_claw_crane", 262 + 10)
+            rng_result      = locals.get_int("am_mp_arcade_claw_crane", 283 + 10)
             distance_result = locals.get_float("am_mp_arcade_claw_crane", 30)
             plushie_spot    = GET_COLLIDED_PLUSHIE_SPOT()
             claw_spot       = GET_CLAW_CRANE_SPOT()
